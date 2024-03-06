@@ -50,6 +50,7 @@ wire [31:0] wire_Data_DMEM_WB_out;
 
 wire [31:0] wire_pc4;
 wire [31:0] wire_pc_mux_out;
+wire [31:0] wire_Next_PCm;
 
 wire zero;
 wire overflow;
@@ -71,6 +72,7 @@ wire wire_BrUn;
 wire wire_BrUn_IDEX_out;
 
 wire wire_BrEq;
+
 wire wire_BrLT;
 
 wire wire_MemRW;
@@ -103,8 +105,19 @@ IF_ID_Register IF_ID_register (
 ID_EX_Register ID_EX_register (
     .clk(clk),
     .reset(reset),
+    //data in
     .pc_IFID_input(wire_pc_IFID_out),
     .instruction_IDEX_in(wire_instruction_IFID_out),
+    .regOut_A_IDEX_in(wire_regOut_A),
+    .regOut_B_IDEX_in(wire_regOut_B),
+
+    //data out
+    .pc_IFID_output(wire_pc_IDEX_out),
+    .regOut_A_IDEX_out(wire_regOut_A_IDEX_out),
+    .regOut_B_IDEX_out(wire_regOut_B_IDEX_out),
+    .instruction_IDEX_out(wire_instruction_IDEX_out),
+
+    // control in
     .ALU_control_IDEX_in(wire_ALU_control),
     .BSel_IDEX_in(wire_BSel),
     .ASel_IDEX_in(wire_ASel),
@@ -113,8 +126,8 @@ ID_EX_Register ID_EX_register (
     .MemRW_IDEX_in(wire_MemRW),
     .WBsel_IDEX_in(wire_WBsel),
     .ImmSel_IDEX_in(wire_ImmSel),
-    .pc_IFID_output(wire_pc_IDEX_out),
-    .instruction_IDEX_out(wire_instruction_IDEX_out),
+
+    // control out
     .ALU_control_IDEX_out(wire_ALU_control_IDEX_out),
     .BSel_IDEX_out(wire_BSel_IDEX_out),
     .ASel_IDEX_out(wire_ASel_IDEX_out),
@@ -122,9 +135,8 @@ ID_EX_Register ID_EX_register (
     .BrUn_IDEX_out(wire_BrUn_IDEX_out),
     .MemRW_IDEX_out(wire_MemRW_IDEX_out),
     .WBsel_IDEX_out(wire_WBsel_IDEX_out),
-    .ImmSel_IDEX_out(wire_ImmSel_IDEX_out),
-    .regOut_A_IDEX_in(wire_regOut_A_IDEX_out),
-    .regOut_B_IDEX_in(wire_regOut_B_IDEX_out)
+    .ImmSel_IDEX_out(wire_ImmSel_IDEX_out)
+
 
 );
 
@@ -132,13 +144,24 @@ ID_EX_Register ID_EX_register (
 EX_MEM_Register EX_MEM_register (
     .clk                  (clk),
     .reset                (reset),
+    // data in
     .pc_EXMEM_in          (wire_pc_IDEX_out),
     .instruction_EXMEM_in (wire_instruction_IDEX_out),
+    .regOut_B_EXMEM_in    (wire_regOut_B_IDEX_out),
+    .ALU_result_EXMEM_in  (wire_ALU_result),
+
+    // data out
+    .pc_EXMEM_out         (wire_pc_EXMEM_out),
+    .instruction_EXMEM_out(wire_instruction_EXMEM_out),
+    .ALU_result_EXMEM_out (wire_ALU_result_EXMEM_out),
+    .regOut_B_EXMEM_out   (wire_regOut_B_EXMEM_out),
+
+    // control in
     .RegWEn_EXMEM_in      (wire_RegWEn_IDEX_out),
     .MemRW_EXMEM_in       (wire_MemRW_IDEX_out),
     .WBsel_EXMEM_in       (wire_WBsel_IDEX_out),
-    .pc_EXMEM_out         (wire_pc_EXMEM_out),
-    .instruction_EXMEM_out(wire_instruction_EXMEM_out),
+
+    // control out
     .RegWEn_EXMEM_out     (wire_RegWEn_EXMEM_out),
     .MemRW_EXMEM_out      (wire_MemRW_EXMEM_out),
     .WBsel_EXMEM_out      (wire_WBsel_EXMEM_out)
@@ -149,18 +172,19 @@ EX_MEM_Register EX_MEM_register (
 MEM_WB_Register MEM_WB_register (
     .clk                  (clk),
     .reset                (reset),
+    // data in
     .instruction_MEMWB_in (wire_instruction_EXMEM_out),
-    .RegWEn_MEMWB_in      (wire_RegWEn_EXMEM_out),
     .DMEM_mux_MEMWB_in    (wire_Data_DMEM),
-    .DMEM_mux_MEMWB_out   (wire_Data_DMEM_WB_out),
+
+    //data out
     .instruction_MEMWB_out(wire_instruction_MEMWB_out),
-    .RegWEn_MEMWB_out     (wire_RegWEn_MEMWB_out)
+    .DMEM_mux_MEMWB_out   (wire_Data_DMEM_WB_out),
+
+    .RegWEn_MEMWB_out     (wire_RegWEn_MEMWB_out),
+    .RegWEn_MEMWB_in      (wire_RegWEn_EXMEM_out)
+
 );
-adder pcAdderM(
-    .val_in(wire_pc_EXMEM_out),
-    .val_in2(32'd1),
-    .val_out(wire_pc4)
-);
+
 
 // Instantiate controller
 controller controller (
@@ -195,7 +219,7 @@ RegFile regFile (
 main_ALU main_ALU (
     .A(wire_A_mux_out_A),
     .B(wire_IMM_mux_out_B),
-    .ALU_control(wire_ALU_control),
+    .ALU_control(wire_ALU_control_IDEX_out),
     .ALU_result(wire_ALU_result),
     .zero(zero),
     .overflow(overflow),
@@ -211,8 +235,8 @@ im_gen imm_gen (
 
 // Instantiate IMM mux
 mux IMM_mux (
-    .sel(wire_BSel),
-    .in0(wire_regOut_B),
+    .sel(wire_BSel_IDEX_out),
+    .in0(wire_regOut_B_IDEX_out),
     .in1(wire_im_gen),
     .out(wire_IMM_mux_out_B)
 );
@@ -222,24 +246,28 @@ DMEM DMEM (
     .clk(clk),
     .memwrite(wire_MemRW),
     .addr(wire_ALU_result_EXMEM_out),
-    .data_W(wire_regOut_B),
+    .data_W(wire_regOut_B_EXMEM_out),
     .data_R(wire_data_R)
 );
-
+adder pcAdderM(
+    .val_in(wire_pc_EXMEM_out),
+    .val_in2(32'd1),
+    .val_out(wire_Next_PCm)
+);
 // Instantiate data memory mux
 mux4_1 DMEM_mux (
     .sel(wire_WBsel_EXMEM_out),
     .in0(wire_data_R),
-    .in1(wire_ALU_result),
-    .in2(wire_pc4),
+    .in1(wire_ALU_result_EXMEM_out),
+    .in2(wire_Next_PCm),
     .out(wire_Data_DMEM)
 );
 
 // Instantiate branch comparator
 Branch_comp Branch_comp (
-    .A(wire_regOut_A),
-    .B(wire_regOut_B),
-    .BrUn(wire_BrUn),
+    .A(wire_regOut_A_IDEX_out),
+    .B(wire_regOut_B_IDEX_out),
+    .BrUn(wire_BrUn_IDEX_out),
     .BrEq(wire_BrEq),
     .BrLT(wire_BrLT)
 );
@@ -269,8 +297,8 @@ adder pc_incrementer (
 
 
 mux pcBrancingMux (
-    .sel(wire_ASel),
-    .in0(wire_regOut_A),
+    .sel(wire_ASel_IDEX_out),
+    .in0(wire_regOut_A_IDEX_out),
     .in1(wire_pc_IDEX_out),
     .out(wire_A_mux_out_A)
 );

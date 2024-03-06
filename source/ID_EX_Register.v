@@ -3,29 +3,29 @@ module ID_EX_Register(
     input wire reset,
     input wire [31:0] pc_IFID_input,
     input wire [31:0] instruction_IDEX_in,
-    input wire [31:0] ALU_control_IDEX_in,
+    input wire [6:0] ALU_control_IDEX_in,
     input wire BSel_IDEX_in,
     input wire ASel_IDEX_in,
     input wire RegWEn_IDEX_in,
     input wire BrUn_IDEX_in,
     input wire MemRW_IDEX_in,
-    input wire WBsel_IDEX_in,
-    input wire ImmSel_IDEX_in,
+    input wire [1:0]WBsel_IDEX_in,
+    input wire [2:0]ImmSel_IDEX_in,
     input wire [31:0] regOut_A_IDEX_in,
     input wire [31:0] regOut_B_IDEX_in,
+
     output reg [31:0] pc_IFID_output,
     output reg [31:0] instruction_IDEX_out,
-    output reg [31:0] ALU_control_IDEX_out,
+    output reg [6:0] ALU_control_IDEX_out,
     output reg BSel_IDEX_out,
     output reg ASel_IDEX_out,
     output reg RegWEn_IDEX_out,
     output reg BrUn_IDEX_out,
     output reg MemRW_IDEX_out,
-    output reg WBsel_IDEX_out,
-    output reg ImmSel_IDEX_out,
+    output reg [1:0]WBsel_IDEX_out,
+    output reg [2:0]ImmSel_IDEX_out,
     output reg [31:0] regOut_A_IDEX_out,
     output reg [31:0] regOut_B_IDEX_out
-
 );
     
         always @(posedge clk or posedge reset) begin
