@@ -23,6 +23,23 @@ module RegFile (
 
     initial begin
         register_File[0] = 32'h0;
+        register_File[1] = 32'h1;
+        register_File[2] = 32'h2;
+        register_File[3] = 32'h3;
+        register_File[4] = 32'h4;
+        register_File[5] = 32'h5;
+        register_File[6] = 32'h6;
+        register_File[7] = 32'h7;
+        register_File[8] = 32'h8;
+        register_File[9] = 32'h9;
+        register_File[10] = 32'ha;
+        register_File[11] = 32'hb;
+        register_File[12] = 32'hc;
+        register_File[13] = 32'hd;
+        register_File[14] = 32'he;
+        register_File[15] = 32'hf;
+        register_File[16] = 32'h10;
+
 
     end
 

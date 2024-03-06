@@ -1,7 +1,6 @@
 `timescale 1ns / 1ps
 module top (
-    input clk, reset,
-    output [31:0] instruction,aluOut,PC
+    input clk, reset
 );
 
 // Wires
@@ -9,7 +8,6 @@ wire [31:0] wire_pc;
 wire [31:0] wire_pc_IFID_out;
 wire [31:0] wire_pc_IDEX_out;
 wire [31:0] wire_pc_EXMEM_out;
-wire [31:0] wire_pc_MEMWB_out;
 
 wire [31:0] wire_instruction;
 wire [31:0] wire_instruction_IFID_out;
@@ -303,8 +301,5 @@ mux pcBrancingMux (
     .out(wire_A_mux_out_A)
 );
 
-assign instruction = wire_instruction;
-assign aluOut = wire_ALU_result;
-assign PC = wire_pc;
 
 endmodule
