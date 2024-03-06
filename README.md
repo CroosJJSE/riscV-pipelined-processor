@@ -102,4 +102,6 @@ To separate the stages, registers are used to store the intermediate results and
 
 Check my [schemetic](https://github.com/CroosJJSE/riscV-pipelined-processor/blob/main/Schematics/stage_seperatedUsingRegisters.pdf).
 
+### check the data indepent R-type are working expected 
+
 
