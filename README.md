@@ -99,4 +99,7 @@ The processor pipeline is divided into the following stages:
 ## Separation Using Registers
 To separate the stages, registers are used to store the intermediate results and control signals between each stage. Each stage is associated with specific register(s) to hold the relevant data until it is needed by the next stage. This separation ensures that each stage operates independently and concurrently, improving processor performance through pipelining.
 
-check my [schemetic] (https://github.com/CroosJJSE/riscV-pipelined-processor/blob/main/Schematics/stage_seperatedUsingRegisters.pdf) 
+
+Check my [schemetic](https://github.com/CroosJJSE/riscV-pipelined-processor/blob/main/Schematics/stage_seperatedUsingRegisters.pdf).
+
+
