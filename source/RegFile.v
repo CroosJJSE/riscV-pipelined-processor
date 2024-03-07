@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 module RegFile (
-    input [4:0] read_regA, read_regB, write_reg,
-    input write_enable, clk, reset,
-    input [31:0] write_data,
+    input wire [4:0] read_regA, read_regB, write_reg,
+    input wire write_enable, clk, reset,
+    input wire [31:0] write_data,
     output [31:0] read_dataA, read_dataB
 );
 

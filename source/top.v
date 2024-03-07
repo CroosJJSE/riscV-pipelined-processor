@@ -39,7 +39,7 @@ wire [31:0] wire_ALU_result_EXMEM_out;
 wire [6:0] wire_ALU_control;
 wire [6:0] wire_ALU_control_IDEX_out;
 
-wire [31:0] wire_data_R;
+wire [31:0] wire_dataR;
 
 
 
@@ -53,7 +53,9 @@ wire [31:0] wire_Next_PCm;
 wire zero;
 wire overflow;
 wire negative;
+
 wire wire_PCSel;
+wire wire_PCSel_IDEX_out;
 
 wire wire_BSel;
 wire wire_BSel_IDEX_out;
@@ -108,12 +110,14 @@ ID_EX_Register ID_EX_register (
     .instruction_IDEX_in(wire_instruction_IFID_out),
     .regOut_A_IDEX_in(wire_regOut_A),
     .regOut_B_IDEX_in(wire_regOut_B),
+    .PCSel(wire_PCSel),
 
     //data out
     .pc_IFID_output(wire_pc_IDEX_out),
     .regOut_A_IDEX_out(wire_regOut_A_IDEX_out),
     .regOut_B_IDEX_out(wire_regOut_B_IDEX_out),
     .instruction_IDEX_out(wire_instruction_IDEX_out),
+    .PCSel_IDEX_out(wire_PCSel_IDEX_out),
 
     // control in
     .ALU_control_IDEX_in(wire_ALU_control),
@@ -205,7 +209,7 @@ RegFile regFile (
     .read_regA(wire_instruction_IFID_out[19:15]),
     .read_regB(wire_instruction_IFID_out[24:20]),
     .write_reg(wire_instruction_MEMWB_out[11:7]),
-    .write_enable(wire_RegWEn),
+    .write_enable(wire_RegWEn_MEMWB_out),
     .clk(clk),
     .reset(reset),
     .write_data(wire_Data_DMEM_WB_out),
@@ -245,7 +249,7 @@ DMEM DMEM (
     .memwrite(wire_MemRW),
     .addr(wire_ALU_result_EXMEM_out),
     .data_W(wire_regOut_B_EXMEM_out),
-    .data_R(wire_data_R)
+    .data_R(wire_dataR)
 );
 adder pcAdderM(
     .val_in(wire_pc_EXMEM_out),
@@ -255,7 +259,7 @@ adder pcAdderM(
 // Instantiate data memory mux
 mux4_1 DMEM_mux (
     .sel(wire_WBsel_EXMEM_out),
-    .in0(wire_data_R),
+    .in0(wire_dataR),
     .in1(wire_ALU_result_EXMEM_out),
     .in2(wire_Next_PCm),
     .out(wire_Data_DMEM)
@@ -263,9 +267,9 @@ mux4_1 DMEM_mux (
 
 // Instantiate branch comparator
 Branch_comp Branch_comp (
-    .A(wire_regOut_A_IDEX_out),
-    .B(wire_regOut_B_IDEX_out),
-    .BrUn(wire_BrUn_IDEX_out),
+    .A(wire_regOut_A),
+    .B(wire_regOut_B),
+    .BrUn(wire_BrUn),
     .BrEq(wire_BrEq),
     .BrLT(wire_BrLT)
 );
@@ -280,7 +284,7 @@ PC_final pc (
 
 // Instantiate PC mux
 mux pc_mux (
-    .sel(wire_PCSel),
+    .sel(wire_PCSel_IDEX_out),
     .in0(wire_pc4),
     .in1(wire_ALU_result),
     .out(wire_pc_mux_out)

@@ -4,6 +4,7 @@ module ID_EX_Register(
     input wire [31:0] pc_IFID_input,
     input wire [31:0] instruction_IDEX_in,
     input wire [6:0] ALU_control_IDEX_in,
+    input wire PCSel,
     input wire BSel_IDEX_in,
     input wire ASel_IDEX_in,
     input wire RegWEn_IDEX_in,
@@ -17,6 +18,7 @@ module ID_EX_Register(
     output reg [31:0] pc_IFID_output,
     output reg [31:0] instruction_IDEX_out,
     output reg [6:0] ALU_control_IDEX_out,
+    output reg PCSel_IDEX_out,
     output reg BSel_IDEX_out,
     output reg ASel_IDEX_out,
     output reg RegWEn_IDEX_out,
@@ -43,6 +45,7 @@ module ID_EX_Register(
             ImmSel_IDEX_out <= 0;
             regOut_A_IDEX_out <= 0;
             regOut_B_IDEX_out <= 0;
+            PCSel_IDEX_out <= 0;
         end else begin
             pc_IFID_output <= pc_IFID_input;
             instruction_IDEX_out <= instruction_IDEX_in;
@@ -56,6 +59,7 @@ module ID_EX_Register(
             ImmSel_IDEX_out <= ImmSel_IDEX_in;
             regOut_A_IDEX_out <= regOut_A_IDEX_in;
             regOut_B_IDEX_out <= regOut_B_IDEX_in;
+            PCSel_IDEX_out <= PCSel;
         end
     end
 
