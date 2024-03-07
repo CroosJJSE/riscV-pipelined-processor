@@ -102,6 +102,13 @@ To separate the stages, registers are used to store the intermediate results and
 
 Check my [schemetic](https://github.com/CroosJJSE/riscV-pipelined-processor/blob/main/Schematics/stage_seperatedUsingRegisters.pdf).
 
-### check the data indepent R-type are working expected 
+### check the data indepent instruction are working expected 
+### R-type - done
+### i-TYPE - done
+### Load and store done
+# BRANCH IS NOT WORKING
+why?
+branch comparator in execution stage, but we want BrEq singnal on decode stage to decide the branching,
+## temp solution, : bring comparator inside decode stage : done
 
 
