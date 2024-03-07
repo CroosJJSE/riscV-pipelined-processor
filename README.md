@@ -111,4 +111,7 @@ why?
 branch comparator in execution stage, but we want BrEq singnal on decode stage to decide the branching,
 ## temp solution, : bring comparator inside decode stage : done
 ### JAL JALR are done, but we can see some issue in pc increments, (control hazards),
+![image](https://github.com/CroosJJSE/riscV-pipelined-processor/assets/141708783/e0e4ba61-1239-4e85-af50-055271a5dd8e)
+
+
 ## Let's fix it
