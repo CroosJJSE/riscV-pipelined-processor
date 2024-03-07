@@ -110,5 +110,5 @@ Check my [schemetic](https://github.com/CroosJJSE/riscV-pipelined-processor/blob
 why?
 branch comparator in execution stage, but we want BrEq singnal on decode stage to decide the branching,
 ## temp solution, : bring comparator inside decode stage : done
-
-
+### JAL JALR are done, but we can see some issue in pc increments, (control hazards),
+## Let's fix it
