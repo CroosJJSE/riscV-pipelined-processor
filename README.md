@@ -115,3 +115,34 @@ branch comparator in execution stage, but we want BrEq singnal on decode stage t
 
 
 ## Let's fix it
+these are Hazards in Pipelined Processors
+
+Hazards:
+
+1. Structural Hazards: Arise when hardware resources are unable to support concurrent execution of all pipeline stages. For instance, simultaneous access requests to a single resource like memory or a register file.
+
+2. Data Hazards:
+    - Read-After-Write (RAW): Occurs when an instruction depends on the result of a previous instruction that has not yet completed.
+    - Write-After-Read (WAR): Happens when a later instruction writes to a register before an earlier instruction reads from it.
+    - Write-After-Write (WAW): Arises when two instructions write to the same register, with the second write occurring before the first write is complete.
+
+3. Control Hazards: Arise due to changes in the instruction flow caused by conditional branches or jumps. Instructions fetched but not yet executed may need to be flushed if the control flow changes.
+
+Mitigation Strategies:
+
+1. Forwarding (Data Forwarding or Bypassing): Allows data to bypass intermediate pipeline stages and be transferred directly to the stage where it's needed, reducing RAW hazards.
+
+2. Stalling (Pipeline Bubble): Inserting NOP (No Operation) cycles into the pipeline to stall execution until data dependencies are resolved, mitigating RAW hazards.
+
+3. Branch Prediction: Predicting the outcome of conditional branches to speculatively fetch and execute instructions, reducing the impact of control hazards.
+
+4. Instruction Reordering: Reordering instructions to minimize data hazards or utilizing out-of-order execution techniques to execute independent instructions concurrently.
+
+5. Hardware Interlocking: Employing hardware mechanisms like scoreboarding or Tomasulo's algorithm to detect and resolve data hazards dynamically.
+
+6. Compiler Optimizations: Utilizing techniques like loop unrolling, software pipelining, and register allocation to minimize data hazards at the compilation stage.
+
+Conclusion:
+
+Understanding and mitigating hazards in pipelined processors are crucial for optimizing performance and achieving efficient execution of instructions. By employing a combination of hardware and software techniques, the impact of hazards can be minimized, leading to improved throughput and overall system efficiency.
+
