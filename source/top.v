@@ -21,7 +21,10 @@ wire [31:0] wire_regOut_A;
 wire [31:0] wire_regOut_A_IDEX_out;
 wire [31:0] wire_regOut_A_EXMEM_out;
 
-
+wire [1:0] wire_ForwardMuxOfASel;
+wire [31:0] wire_ForwardMuxOfA_out;
+wire [1:0] wire_ForwardMuxOfBSel;
+wire [31:0] wire_ForwardMuxOfB_out;
 
 
 wire [31:0] wire_regOut_B;
@@ -188,6 +191,18 @@ MEM_WB_Register MEM_WB_register (
 );
 
 
+// Forwarding unit instantiation
+ForwardingUnit ForwardingUnit1 (
+    .ID_EX_RS1(wire_instruction_IDEX_out[19:15]),
+    .ID_EX_RS2(wire_instruction_IDEX_out[24:20]),
+    .EX_MEM_RD(wire_instruction_EXMEM_out[11:7]),
+    .MEM_WB_RD(wire_instruction_MEMWB_out[11:7]),
+    .EX_MEM_RegW(wire_RegWEn_EXMEM_out),
+    .MEM_WB_RegW(wire_RegWEn_MEMWB_out),
+    .MuxA(wire_ForwardMuxOfASel),
+    .MuxB(wire_ForwardMuxOfBSel)
+);
+
 // Instantiate controller
 controller controller (
     .inst(wire_instruction_IFID_out),
@@ -216,11 +231,27 @@ RegFile regFile (
     .read_dataA(wire_regOut_A),
     .read_dataB(wire_regOut_B)
 );
+//  intantiate ForwardMuxOfA 
+mux4_1 ForwardMuxOfA (
+    .sel(wire_ForwardMuxOfASel),
+    .in0(wire_A_mux_out_A),
+    .in1(wire_Data_DMEM_WB_out),
+    .in2(wire_ALU_result_EXMEM_out),
+    .out(wire_ForwardMuxOfA_out)
+);
+// intantiate ForwardMuxOfB
+mux4_1 ForwardMuxOfB (
+    .sel(wire_ForwardMuxOfBSel),
+    .in0(wire_IMM_mux_out_B),
+    .in1(wire_Data_DMEM_WB_out),
+    .in2(wire_ALU_result_EXMEM_out),
+    .out(wire_ForwardMuxOfB_out)
+);
 
 // Instantiate main ALU
 main_ALU main_ALU (
-    .A(wire_A_mux_out_A),
-    .B(wire_IMM_mux_out_B),
+    .A(wire_ForwardMuxOfA_out),
+    .B(wire_ForwardMuxOfB_out),
     .ALU_control(wire_ALU_control_IDEX_out),
     .ALU_result(wire_ALU_result),
     .zero(zero),
