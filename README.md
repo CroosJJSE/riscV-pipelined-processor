@@ -142,7 +142,30 @@ Mitigation Strategies:
 
 6. Compiler Optimizations: Utilizing techniques like loop unrolling, software pipelining, and register allocation to minimize data hazards at the compilation stage.
 
-Conclusion:
+## Data Hazards
+README: Fixing Data Hazards by Forwarding
 
-Understanding and mitigating hazards in pipelined processors are crucial for optimizing performance and achieving efficient execution of instructions. By employing a combination of hardware and software techniques, the impact of hazards can be minimized, leading to improved throughput and overall system efficiency.
+Forwarding:
+
+Forwarding, also known as data forwarding or bypassing, is a technique used in pipelined processors to mitigate data hazards by forwarding data from the output of one pipeline stage to the input of another, bypassing intermediate stages.
+
+Example:
+
+Consider the following sequence of instructions in a simple pipelined processor:
+
+1. ADD R1, R2, R3     ; R1 = R2 + R3
+2. SUB R4, R1, R5     ; R4 = R1 - R5
+3. MUL R6, R4, R7     ; R6 = R4 * R7
+
+Assuming each instruction takes one clock cycle to execute and the pipeline stages are Fetch (F), Decode (D), Execute (E), Memory (M), and Write-back (W), let's analyze the data hazards:
+
+- The SUB instruction depends on the result of the ADD instruction (RAW hazard).
+- The MUL instruction depends on the result of the SUB instruction (RAW hazard).
+
+To mitigate these hazards using forwarding:
+
+1. After the ADD instruction executes in the Execute (E) stage, its result (R1 = R2 + R3) is forwarded directly to the Decode (D) stage of the SUB instruction, allowing the SUB instruction to proceed without stalling.
+2. Similarly, after the SUB instruction executes in the Execute (E) stage, its result (R4 = R1 - R5) is forwarded directly to the Decode (D) stage of the MUL instruction, allowing the MUL instruction to proceed without stalling.
+
+By forwarding data directly from the output of one stage to the input of another, forwarding enables instructions to proceed through the pipeline smoothly, reducing stalls and improving overall throughput.
 
