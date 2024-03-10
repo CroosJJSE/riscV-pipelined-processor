@@ -11,6 +11,7 @@ wire [31:0] wire_pc_EXMEM_out;
 
 wire [31:0] wire_instruction;
 wire [31:0] wire_instruction_IFID_out;
+wire [31:0] wire_instruction_IFID_NoOpMuxOut;
 wire [31:0] wire_instruction_IDEX_out;
 wire [31:0] wire_instruction_EXMEM_out;
 wire [31:0] wire_instruction_MEMWB_out;
@@ -56,7 +57,7 @@ wire [31:0] wire_Next_PCm;
 wire zero;
 wire overflow;
 wire negative;
-
+wire wire_stall;
 wire wire_PCSel;
 wire wire_PCSel_IDEX_out;
 
@@ -99,6 +100,7 @@ InstructionMemory instruction_memory (
 IF_ID_Register IF_ID_register (
     .clk(clk),
     .reset(reset),
+    .stall(wire_stall),
     .instruction_IFID_in(wire_instruction),
     .instruction_IFID_out(wire_instruction_IFID_out),
     .pc_IFID_in(wire_pc),
@@ -110,7 +112,7 @@ ID_EX_Register ID_EX_register (
     .reset(reset),
     //data in
     .pc_IFID_input(wire_pc_IFID_out),
-    .instruction_IDEX_in(wire_instruction_IFID_out),
+    .instruction_IDEX_in(wire_instruction_IFID_NoOpMuxOut),
     .regOut_A_IDEX_in(wire_regOut_A),
     .regOut_B_IDEX_in(wire_regOut_B),
     .PCSel(wire_PCSel),
@@ -171,8 +173,21 @@ EX_MEM_Register EX_MEM_register (
     .MemRW_EXMEM_out      (wire_MemRW_EXMEM_out),
     .WBsel_EXMEM_out      (wire_WBsel_EXMEM_out)
 );
-
-
+// intan6tioate stall_controller
+stall_controller stall_controller (
+    .new_instruction(wire_instruction_IFID_out),
+    .IDEX_instruction_out(wire_instruction_IDEX_out),
+    .stall(wire_stall),
+    .EXMEM_instruction_out(wire_instruction_EXMEM_out),
+    .MEMWB_instruction_out(wire_instruction_MEMWB_out)
+);
+// INtantiate Mux for insert NO-OPs
+mux NoOpMux (
+    .sel(wire_stall),
+    .in0(wire_instruction_IFID_out),
+    .in1(32'd0),
+    .out(wire_instruction_IFID_NoOpMuxOut)
+);
 // Instantiate MEM_WB_Register
 MEM_WB_Register MEM_WB_register (
     .clk                  (clk),
@@ -193,10 +208,9 @@ MEM_WB_Register MEM_WB_register (
 
 // Forwarding unit instantiation
 ForwardingUnit ForwardingUnit1 (
-    .ID_EX_RS1(wire_instruction_IDEX_out[19:15]),
-    .ID_EX_RS2(wire_instruction_IDEX_out[24:20]),
-    .EX_MEM_RD(wire_instruction_EXMEM_out[11:7]),
-    .MEM_WB_RD(wire_instruction_MEMWB_out[11:7]),
+    .instruction_IDEX(wire_instruction_IDEX_out),
+    .instruction_EXMEM(wire_instruction_EXMEM_out),
+    .instruction_MEMWB(wire_instruction_MEMWB_out),
     .EX_MEM_RegW(wire_RegWEn_EXMEM_out),
     .MEM_WB_RegW(wire_RegWEn_MEMWB_out),
     .MuxA(wire_ForwardMuxOfASel),
@@ -309,6 +323,7 @@ Branch_comp Branch_comp (
 PC_final pc (
     .clk(clk),
     .reset(reset),
+    .stall(wire_stall),
     .pc_in(wire_pc_mux_out),
     .pc_out(wire_pc)
 );
