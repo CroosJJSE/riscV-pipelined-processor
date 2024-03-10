@@ -169,3 +169,19 @@ To mitigate these hazards using forwarding:
 
 By forwarding data directly from the output of one stage to the input of another, forwarding enables instructions to proceed through the pipeline smoothly, reducing stalls and improving overall throughput.
 
+# Forwarding Unit Implementation
+
+Implemented a forwarding unit that enables forwarding of data from the EXMEM and MEMWB stages directly to the ALU instead of writing to registers. This enhances the efficiency of data handling and reduces the latency in the pipeline. Two large multiplexers have been incorporated to facilitate the selection of forwarding sources.
+
+The multiplexer options are as follows:
+- 0: Regular data from reg
+- 1: Data forwarded from MEMWB stage
+- 2: Data forwarded from EXMEM stage
+
+### Example Instructions:
+1. `ADD r3 <- r1 + r2`: This instruction should forward data from the MEMWB stage to satisfy the operand requirement of instruction 3.
+2. `ADD r4 <- r2 + r3`: This instruction should forward data from the EXMEM stage to fulfill the operand requirement of instruction 3.
+3. `ADD r8 <- r2 + r3`: This instruction does not require any data forwarding.
+
+![image](https://github.com/CroosJJSE/riscV-pipelined-processor/assets/141708783/419db133-fe5a-48b8-8bee-9d4d74561933)
+
